@@ -822,7 +822,7 @@ async function contactPageLayout(data = {}) {
                 </div>
                 
                 <!-- Contact Form -->
-                <form id="contactForm">
+                <div id="contactForm">
                     <!-- Name Fields -->
                     <div class="form-row">
                         <div class="form-group">
@@ -920,7 +920,7 @@ async function contactPageLayout(data = {}) {
                     
                     <!-- Form Footer -->
                     <div class="form-footer">
-                        <button type="submit" class="submit-button" id="submitForm">
+                        <button class="submit-button" id="submitForm">
                             <svg viewBox="0 0 24 24" width="20" height="20">
                                 <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" fill="currentColor"/>
                             </svg>
@@ -931,7 +931,7 @@ async function contactPageLayout(data = {}) {
                             <span>Fields marked with <span style="color: var(--danger)">*</span> are required</span>
                         </div>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
     </div>

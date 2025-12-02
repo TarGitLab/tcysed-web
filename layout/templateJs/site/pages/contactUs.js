@@ -66,8 +66,7 @@ async function sendContactFormRequest(formData) {
 
 async function iniContactUsPage(data = {}) {
 
-  document.addEventListener("DOMContentLoaded", function () {
-    const contactForm = document.getElementById("contactForm");
+  const contactForm = document.getElementById("contactForm");
     const messageInput = document.getElementById("message");
     const secretInput = document.getElementById("secretWork");
     const charCount = document.getElementById("charCount");
@@ -150,8 +149,9 @@ async function iniContactUsPage(data = {}) {
     }
 
     // Form validation and submission
-    if (contactForm) {
-      contactForm.addEventListener("submit", async function (e) {
+    if (submitButton) {
+      submitButton.addEventListener("click", async function (e) {
+        console.log('ok');
         e.preventDefault();
         let isValid = true;
 
@@ -203,7 +203,6 @@ async function iniContactUsPage(data = {}) {
         } else {
           email.classList.add("success");
         }
-
 
         // Validate subject
         const subject = document.getElementById("subject");
@@ -276,19 +275,15 @@ async function iniContactUsPage(data = {}) {
             timestamp: new Date().toISOString(),
           };
 
-
           let sendRes = await sendContactFormRequest(formDataObj);
           if (sendRes.status) {
             submitButton.innerHTML = originalText;
             submitButton.disabled = false;
 
             successMessage.style.display = "flex";
-            contactForm.reset();
-            controller({controller: "site", page: "home"});
+            controller({ controller: "site", page: "home" });
             return;
           }
-
-
         } else if (errorMessage) {
           errorMessage.style.display = "flex";
         }
@@ -308,8 +303,6 @@ async function iniContactUsPage(data = {}) {
         }
       });
     });
-
-  });
 
 }
 
