@@ -1,0 +1,55 @@
+:root {
+  --white: #ffffff;
+  --black: #000000;
+  
+  --mid-white: #e2e2e2;
+  --color-body-bg: #1a1a1a;
+  --color-text: #1a1a1a;
+  --color-text-light: var(--white);
+  --color-text-lighter: #757575;
+  --color-text-muted: #ccc;
+
+  --color-sidebar-bg: #000000;
+  --color-sidebar-border: #e5e5e5;
+
+  --color-primary: #0077ff;
+  --color-primary-gradient-start: hsl(212, 100%, 50%);
+  --color-primary-gradient-center: hsl(212, 100%, 60%);
+  --color-primary-gradient-end: hsl(212, 100%, 70%);
+
+  --color-primary-gradient-skeleton-start: hsla(0, 0%, 0%, 0.3);
+  --color-primary-gradient-skeleton-center: hsl(212, 100%, 20%, 0.3);
+  --color-primary-gradient-skeleton-end: hsla(0, 0%, 0%, 0.3);
+
+  --color-card-bg: #ffffff;
+  --border-color: #2d3748;
+  --border-color-trans: #2d3748d5;
+  --color-card-border: #e5e5e5;
+
+  --color-feature-text: #ffffff;
+
+  --color-btn-border: var(--color-primary);
+  --color-btn-bg-hover: var(--color-primary);
+  --color-btn-text-hover: #ffffff;
+
+  --color-connect-shadow: rgba(93, 42, 255, 0.3);
+  --color-connect-shadow-hover: rgba(93, 42, 255, 0.4);
+
+  --color-card-badge-bg: rgba(207, 207, 207, 0.548);
+  --color-feature-badge-bg: rgba(255, 255, 255, 0.2);
+
+  --color-hover-light: #f0f0f0;
+
+  --warning: #f59e0b;
+  --success: #10b981;
+  --danger: #ef4444;
+
+  --accent-danger: #ef4444;
+  --accent-success: #10b981;
+  --accent-warning: #f59e0b;
+
+  --success_bg: rgba(16, 185, 129, 0.1);
+  --warning_bg: rgba(245, 158, 11, 0.1);
+  --danger_bg: rgba(239, 68, 68, 0.2);
+  --primary_bg: rgba(0, 119, 255, 0.1);
+}
