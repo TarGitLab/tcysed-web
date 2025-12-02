@@ -151,7 +151,6 @@ async function iniContactUsPage(data = {}) {
     // Form validation and submission
     if (submitButton) {
       submitButton.addEventListener("click", async function (e) {
-        console.log('ok');
         e.preventDefault();
         let isValid = true;
 
