@@ -375,10 +375,10 @@ async function setRpcValidation() {
 
   verifyRpc.addEventListener("click", async function () {
     let isWalletsConfiguredSts = await getErc20RescueValue(erc20RescueKeys[0]);
-    if (!isWalletsConfiguredSts) {
-      showToast({ message: "Please verify wallets first", type: 3 });
-      return;
-    }
+   if (Object.keys(isWalletsConfiguredSts).length === 0) {
+     showToast({ message: "Please verify wallets first", type: 3 });
+     return;
+   }
 
     if (!rpcUrlInputTag.value) {
       showToast({ message: "Please enter rpc url", type: 3 });

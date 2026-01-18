@@ -5,7 +5,11 @@ import {
   iniContactUsPage,
 } from "./site/site.js";
 
-import { iniNftRescuePage, iniErc20RescuePage } from "./rescue/rescue.js";
+import {
+  iniNftRescuePage,
+  iniErc20RescuePage,
+  initRevokeDelegationsPage,
+} from "./rescue/rescue.js";
 
 import { iniPageBackBtn , ini404} from "./utils/utils.js";
 
@@ -18,4 +22,5 @@ export {
   iniNftRescuePage,
   iniErc20RescuePage,
   iniContactUsPage,
+  initRevokeDelegationsPage,
 };

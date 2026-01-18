@@ -261,6 +261,25 @@ async function homeTemplate(data = {}) {
                 </div>
               </div>
 
+              <div class="card recentLunchedCard" data-controller="rescue" data-page="revokeDelegations">
+                <div class="card-image">
+                  <div class="card-icon">
+                    <img src="./assets/image/pages/revoke_logo.jpg" alt="Erc20 Token Rescue Logo" />
+                  </div>
+                  <div class="card-image-content">
+                    <img src="./assets/image/pages/revoke_bg.png" alt="" />
+                  </div>
+                </div>
+                <div class="card-content">
+                  <h2 class="card-title">Revoke Wallet Delegations</h2>
+                  <p class="card-description">Instantly revoke token approvals and smart-contract permissions to secure your wallet across all EVM networks.</p>
+                  <div>
+                     <button class="card-tag">EVM</button>
+                     <button class="card-tag">Wallet</button>
+                  </div>
+                </div>
+              </div>
+
             </div>
 
           </section>

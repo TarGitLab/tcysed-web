@@ -6,10 +6,12 @@ import { ini404 } from "../../templateJs/template.js";
 
 import { nftRescuePage } from "./nft/nftRescue.js";
 import { erc20RescuePage } from "./erc20/erc20.js";
+import { walletDelegationRevokePage } from "./wallet/revokeDelegations.js";
 
 let pages = {
   nftRescue: nftRescuePage,
   erc20Rescue: erc20RescuePage,
+  revokeDelegations : walletDelegationRevokePage,
 };
 
 async function rescueController(data) {

@@ -9,7 +9,7 @@ function getProvider(url) {
 
 async function checkRpc(url) {
   const provider = getProvider(url);
-
+  
   try {
     const network = await provider.getNetwork();
 
