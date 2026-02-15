@@ -18,6 +18,7 @@ async function checkRpc(url) {
       chainId: Number(network.chainId),
       error: null,
       provider: provider,
+      name: network.name,
     };
   } catch (err) {
     return {

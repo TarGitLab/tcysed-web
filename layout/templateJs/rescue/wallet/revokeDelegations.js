@@ -3,24 +3,30 @@ import { showToast } from "../../../utils/toast.js";
 import { controller } from "../../../layoutController/layoutController.js";
 
 import { validateSelectedRescueWallets, getSelectedWalletDetails } from "../../../../src/backend/site/settings/rescueWalletsStorage.js";
-import { checkRpc } from "../../../../src/backend/utils/static/checkRpcUrl.js";
 import { readyForSendingTxRequest } from "./txSend.js";
 
-import {initrevokeWalletRescueStorage,getrevokeWalletRescue,setrevokeWalletRescueValue,clearrevokeWalletRescue,
-} from "../../../../src/backend/rescue/wallet/revoke.js";
+import { checkRpc } from "../../../../src/backend/utils/static/checkRpcUrl.js";
+
+import { initrevokeWalletRescueStorage,getrevokeWalletRescue,setrevokeWalletRescueValue,clearrevokeWalletRescue, } from "../../../../src/backend/rescue/wallet/revoke.js";
+import { rpcUrls } from "../../../config/conData.js";
 
 let revokeRescueKey = [
   "isWalletsConfigured",
-  "rpcUrl",
+];
+
+let rpcKeys = [
+  "ethereum",
+  "bnb",
+  "arbitrum",
+  "base",
+  "optimism",
+  "polygon",
+  "avalanche"
 ];
 
 let selectedWalletType = ["safe", "compromised", "sponsor"];
 let provider;
-let chainId;
 
-let wallets = {};
-
-let delegatedCa;
 let listContainerDiv;
 
 let scanBtnInner = `
@@ -33,139 +39,147 @@ let scanBtnInner = `
   Scan Delegations
 `;
 
-const delegationRowTemplate = (delegation) => `
-  <div class="delegation-row" data-contract="${delegation.contractAddress}">
-    <div class="delegation-info">
-      <span class="chain-id-badge">Chain ID: ${delegation.chainId}</span>
-      <span class="delegation-address">${delegation.contractAddress}</span>
-    </div>
-    <div class="delegation-actions">
-      <button class="btn btn-danger revoke-single-btn" data-contract="${delegation.contractAddress}" data-chain="${delegation.chainId}">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z" fill="currentColor"/>
-        </svg>
-        Revoke Access
-      </button>
-    </div>
-  </div>
-`;
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-async function showDelegatedResult(_delegatedAddress){
-  listContainerDiv = document.querySelector("#listCon");
-  let noListDiv = document.querySelector("#noDelegateList");
+function createDelegationRow(delegation) {
+  // Row container
+  const row = document.createElement("div");
+  row.className = "delegation-row";
+  row.dataset.contract = delegation.contractAddress;
 
-  listContainerDiv.innerHTML = ``;
+  // Info container
+  const info = document.createElement("div");
+  info.className = "delegation-info";
+
+  // Chain badge
+  const chainBadge = document.createElement("span");
+  chainBadge.className = "chain-id-badge";
+  chainBadge.textContent = `Network: ${delegation.name} | Chian Id: ${delegation.chainId}`;
+
+  // Address
+  const address = document.createElement("span");
+  address.className = "delegation-address";
+  address.textContent = delegation.contractAddress;
+
+  info.appendChild(chainBadge);
+  info.appendChild(address);
+
+  // Actions container
+  const actions = document.createElement("div");
+  actions.className = "delegation-actions";
+
+  // Button
+  const button = document.createElement("button");
+  button.className = "btn btn-danger revoke-single-btn";
+  button.dataset.contract = delegation.contractAddress;
+  button.dataset.rpcurl = delegation.rpcUrl;
+  button.dataset.chain = delegation.chainId;
+
+  // SVG icon
+  const svgNS = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(svgNS, "svg");
+  svg.setAttribute("width", "14");
+  svg.setAttribute("height", "14");
+  svg.setAttribute("viewBox", "0 0 24 24");
+  svg.setAttribute("fill", "none");
+
+  const path = document.createElementNS(svgNS, "path");
+  path.setAttribute(
+    "d",
+    "M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z"
+  );
+  path.setAttribute("fill", "currentColor");
+
+  svg.appendChild(path);
+
+  // Button text
+  const text = document.createTextNode(" Revoke Access");
+
+  button.appendChild(svg);
+  button.appendChild(text);
+
+  actions.appendChild(button);
+
+  // Assemble row
+  row.appendChild(info);
+  row.appendChild(actions);
+
+  return row;
+}
+
+async function showDelegatedResult(_providerRes,_rpcUrl,_delegatedAddress){
 
   if(_delegatedAddress){
-    noListDiv.classList.add("hidden");
-    let delegationRowTemplateResult = await delegationRowTemplate({contractAddress: _delegatedAddress,chainId, });
-    listContainerDiv.innerHTML = delegationRowTemplateResult;
-
-    let revokeBtn = document.querySelector(".revoke-single-btn");
-    revokeBtn.addEventListener('click', async function(){
-      revokeBtn.innerHTML = "Processing...";
-      await readyForSendingTxRequest(listContainerDiv, noListDiv);
-      revokeBtn.innerHTML = "Revoke Access";
-    })
+    let delegationRowTemplateResult = await createDelegationRow({contractAddress: _delegatedAddress,chainId: _providerRes.chainId, name: _providerRes.name, rpcUrl: _rpcUrl});
+    listContainerDiv.appendChild(delegationRowTemplateResult);
   }else{
-    noListDiv.classList.remove("hidden");
     showToast({message: "No delegations found. Make sure wallets and RPC are configured correctly.", type: 3});
   }
 
 }
 
 async function configureStartScan(){
+
+  
   let scanBtn = document.querySelector("#scanDelegations");
+  listContainerDiv = document.querySelector("#listCon");
+  
   scanBtn.addEventListener('click', async function(){
+    
+    listContainerDiv.innerHTML = "";
+
+    const res = await getrevokeWalletRescue();
+    if (!res) return showToast({message: "Revoke details rescue not found.", type: 3, duration: 5});
+  
+    if (!res.isWalletsConfigured) return showToast({message: "Please verify wallets first.", type: 3, duration: 5});
 
     let compromisedWallet = await getSelectedWalletDetails(selectedWalletType[1]);
+
+    scanBtn.innerHTML = "Scanning...";
+
     if(compromisedWallet.status){
       let compromisedWalletAddress = compromisedWallet.wallet.address;
       if(compromisedWalletAddress){
 
-        if(provider){
+        for (let index = 0; index < rpcKeys.length; index++) {
+          const rpcUrl = rpcUrls[rpcKeys[index]];
 
-          scanBtn.innerHTML = "Scanning...";
+          let providerRes = await checkRpc(rpcUrl);
+          if(providerRes.status){
 
-          try {
+            provider = providerRes.provider;
 
-          const code = await provider.getCode(compromisedWalletAddress);
-          let isCode = code !== "0x";
+            let code = await provider.getCode(compromisedWalletAddress);
+            
+            if (code === "0x") {
+              continue;
+            } else {
+              await showDelegatedResult(providerRes,rpcUrl,code);
+            }
 
-          if(isCode){
-            delegatedCa = code;
+          }else{
+            showToast({message: providerRes.error,type: 3, duration: 15})
+            continue;
           }
 
-          showDelegatedResult(delegatedCa);
-          scanBtn.innerHTML = scanBtnInner;
-          
-          } catch (error) {
-            showToast({ message: error.message, type: 3 });
-            scanBtn.innerHTML= scanBtnInner;
-            return;
-          }
+          await sleep(1000);
 
-        }else{
-          showToast({message: "Provider not set.", type: 3});
-          return;
         }
 
+        await readyForSendingTxRequest();
+        scanBtn.innerHTML = scanBtnInner;
+
       }else{
+        scanBtn.innerHTML = scanBtnInner;
        showToast({ message: "Compromised Wallet address not found.", type: 3 });
        return;
       }
     }else{
       showToast({ message: "Please select the wallets first.", type: 3 });
+      scanBtn.innerHTML = scanBtnInner;
       return;
     }
 
-  });
-}
-
-async function setRpcValidation() {
-  let rpcUrlInputTag = document.querySelector("#rpcUrlInputTag");
-  let verifyRpc = document.querySelector("#verifyRpc");
-
-  verifyRpc.addEventListener("click", async function () {
-    let isWalletsConfiguredSts = await getrevokeWalletRescue(
-      revokeRescueKey[0]
-    );
-
-   if (Object.keys(isWalletsConfiguredSts).length === 0) {
-      showToast({ message: "Please verify wallets first", type: 3 });
-      return;
-    }
-
-    if (!rpcUrlInputTag.value) {
-      showToast({ message: "Please enter rpc url", type: 3 });
-      return;
-    }
-
-    verifyRpc.innerHTML = `Verifying...`;
-    let res = await checkRpc(rpcUrlInputTag.value.trim());
-    verifyRpc.innerHTML = `
-      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-        <circle cx="8" cy="8" r="5.5" stroke="currentColor" stroke-width="1.5"/>
-        <path d="M13 13L16 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-      </svg>
-      Verify
-    `;
-
-    if (!res.status) {
-      showToast({ message: res.error, type: 3 });
-      return;
-    }
-
-    await setrevokeWalletRescueValue(revokeRescueKey[1], rpcUrlInputTag.value.trim());
-    provider = res.provider;
-    chainId = res.chainId;
-    verifyRpc.style.backgroundColor = "var(--success)";
-    verifyRpc.innerHTML = `Verified`;
-
-    let chainIdValue = document.querySelector("#chainIdValue");
-    chainIdValue.innerHTML = chainId;
-    let chainIdDisplay = document.querySelector("#chainIdDisplay");
-    chainIdDisplay.classList.remove("hidden");
   });
 }
 
@@ -211,7 +225,6 @@ async function checkWalletConfigure() {
         for (let i = 0; i < missingSelections.length; i++) {
           const singleMissing = missingSelections[i];
           let displayTag = document.querySelector(`#${singleMissing}Address`);
-          console.log(displayTag);
           displayTag.innerHTML = "Not Configured";
         }
       }
@@ -352,7 +365,6 @@ async function initRevokeDelegationsPage() {
       }
    });
 
-   await setRpcValidation();
    await configureStartScan();
 
 }

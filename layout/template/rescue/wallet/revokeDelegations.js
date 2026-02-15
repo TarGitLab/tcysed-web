@@ -435,11 +435,6 @@ async function revokeDelegationPageLayout(data = {}) {
             overflow-wrap: anywhere;
         }
 
-        .revoke-delegation-container .status-pending {
-            background-color: var(--warning_bg);
-            color: var(--warning);
-        }
-
         .revoke-delegation-container .status-success {
             background-color: var(--success_bg);
             color: var(--success);
@@ -702,38 +697,6 @@ async function revokeDelegationPageLayout(data = {}) {
             
         </section>
 
-        <!-- Section 3: RPC URL Configuration -->
-        <section class="card active" id="rpcSection">
-            <div class="card-header">
-                <h2 class="card-title">
-                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 25px; height: 25px;">
-                        <path d="M9 3L5 6.99H8V14H10V6.99H13L9 3ZM16 17.01V10H14V17.01H11L15 21L19 17.01H16Z" fill="currentColor"/>
-                    </svg>
-                    Network Configuration
-                </h2>
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label">RPC URL</label>
-                <div class="input-group">
-                    <input type="text" class="form-control" id="rpcUrlInputTag" placeholder="https://mainnet.infura.io/v3/your-api-key" value="">
-                    <button class="btn btn-primary" id="verifyRpc">
-                        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                          <circle cx="8" cy="8" r="5.5" stroke="currentColor" stroke-width="1.5"/>
-                          <path d="M13 13L16 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                        </svg>
-                        Verify
-                    </button>
-                </div>
-                <div class="chain-id hidden" id="chainIdDisplay" >
-                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="16" height="16">
-                        <path d="M13.828 10.172C13.0779 9.42187 12.0609 9 11 9C9.93913 9 8.92215 9.42187 8.172 10.172L5.172 13.172C4.42186 13.9221 4 14.9391 4 16C4 17.0609 4.42186 18.0779 5.172 18.828C5.92215 19.5781 6.93913 20 8 20C9.06087 20 10.0779 19.5781 10.828 18.828L12 17.656M10.172 13.828C10.9221 14.5781 11.9391 15 13 15C14.0609 15 15.0779 14.5781 15.828 13.828L18.828 10.828C19.5781 10.0779 20 9.06087 20 8C20 6.93913 19.5781 5.92215 18.828 5.172C18.0779 4.42187 17.0609 4 16 4C14.9391 4 13.9221 4.42187 13.172 5.172L12 6.343" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    Chain ID: <span id="chainIdValue">Network details</span>
-                </div>
-            </div>
-        </section>
-
         <!-- Section 4: Delegation Results -->
         <section class="card active" id="delegationSection">
             <div class="card-header">
@@ -760,12 +723,10 @@ async function revokeDelegationPageLayout(data = {}) {
             <div class="delegation-list" id="delegationList">
                 <!-- Delegations will be populated here dynamically -->
                 <div id="listCon"></div>
-                <div class="no-delegations" id="noDelegateList">
-                    Configure wallets and RPC, then click "Scan Delegations"
-                </div>
             </div>
 
-            <div class="transaction-status status-pending hidden" id="transactionStatus">
+            <div class="transaction-status" id="transactionStatus">
+               <div style="background-color: var(--success_bg); color: var(--success); "><div>
             </div>
 
         </section>
